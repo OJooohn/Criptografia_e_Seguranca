@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-void strToBin(char input[100], int bin[16][32]){
+#define TOTAL_LINES (chunks * 16)
 
-    int inputLen = strlen(input);
+void strToBin(char *input, uint8_t chunks, int bin[][32]){
+
+    int len = strlen(input);
     int i = 0, j = 0;
 
-    for(int k = 0; k < inputLen; k++){
+    for(int k = 0; k < len; k++){
 
         int c = input[k];
 
@@ -19,12 +21,12 @@ void strToBin(char input[100], int bin[16][32]){
                 j++;
                 i = 0;
             }
-            if (j >= 16) { 
+            if (j >= TOTAL_LINES) { 
                 return;
             }
         }
 
-        if(k == inputLen - 1){
+        if(k == len - 1){
             bin[j][i] = 1;
         }
 
@@ -32,9 +34,9 @@ void strToBin(char input[100], int bin[16][32]){
 
 }
 
-void printBinMatrix(int bin[16][32]){
+void printBinMatrix(uint8_t chunks, int bin[][32]){
 
-    for(int j = 0; j < 16; j++){
+    for(int j = 0; j < TOTAL_LINES; j++){
         for(int i = 0; i < 32; i++){
             if(i % 8 == 0 && i != 0){
                 printf(" ");
@@ -54,41 +56,46 @@ void printBinary(uint64_t num) {
     printf("\n");
 }
 
-void addMessageLength(int inputLen, int bin[16][32]){
+void addMessageLength( uint8_t chunks, uint64_t messageLength, int bin[16][32]){
 
-    uint64_t messasgeLength = inputLen * 8;
-
-    int i = 0, j = 14;
+    int i = 0, j = TOTAL_LINES - 2;
     for(int x = 63; x >= 0; x--){
 
-        bin[j][i++] = (messasgeLength >> x) & 1;
+        bin[j][i++] = (messageLength >> x) & 1;
         if(i == 32){
             j++;
             i = 0;
         }
-        if (j >= 16) { 
+        if (j >= TOTAL_LINES) { 
             return;
         }
-
     }
 
 }
 
 int main(){
 
-    char input[100];
-    printf("Informe o input: ");
-    fgets(input, 100, stdin);
+    char input[] = "Testando o codigo para ver se funciona corretamente os chunks e se tiver mais de 2 chunks o codigo vai saber fazer o que fazer";
 
-    // Remover \n do input
-    input[strcspn(input, "\n")] = '\0';
+    uint64_t messageLength = strlen(input) * 8;
 
-    int bin[16][32] = {0};
+    // Calcula quantos chunks de 512 bits são necessários
+    uint8_t chunks = 1;
+    if (messageLength > 448) {
+        chunks = ((messageLength + 1 + 64) + 511) / 512;
+    }
 
-    strToBin(input, bin);
-    addMessageLength(strlen(input), bin);
+    printf("%d chunks\n", chunks);
+    printf("%d total lines\n", chunks * 16);
+    printf("%llu input len in bits\n", messageLength);
+
+    int bin[chunks * 16][32];
+    memset(bin, 0, sizeof(bin)); 
+
+    strToBin(input, chunks, bin);
+    addMessageLength(chunks, messageLength, bin);
     
-    printBinMatrix(bin);
+    printBinMatrix(chunks, bin);
 
     return 0;
 }
