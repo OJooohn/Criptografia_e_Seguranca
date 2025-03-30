@@ -168,7 +168,7 @@ void compute_temp2(uint32_t sigma0, uint32_t majority, uint32_t *temp2) {
 }
 
 int main() {
-    char input[] = "Eu vou engravidar o Paulo, o meu amigo Tig vai ser o padrinho do meu filho querido que eu amo bastante!!! Espero que de certo a inseminação caseira";
+    char input[] = "Vila Bodega, um lugar de alegria, onde a diversão nunca termina, é todo dia!";
     uint64_t message_length = strlen(input) * 8;
     uint8_t chunks = ((message_length + 1 + 64) + 511) / BLOCK_SIZE;
     int total_lines = TOTAL_LINES(chunks);
@@ -191,7 +191,7 @@ int main() {
         return 1;
     }
 
-    uint64_t hash[8] = {
+    uint32_t hash[8] = {
         0x6a09e667,
         0xbb67ae85,
         0x3c6ef372,
@@ -202,7 +202,7 @@ int main() {
         0x5be0cd19
     };
 
-    uint64_t K[64] = {
+    uint32_t K[64] = {
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
         0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
         0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -221,7 +221,7 @@ int main() {
         0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
     };
 
-    uint64_t a, b, c, d, e, f, g, h;
+    uint32_t a, b, c, d, e, f, g, h;
 
     uint32_t *temp1, *sigma1, *choice, *temp2, *sigma0, *majority;
     temp1 = sigma1 = choice = temp2 = sigma0 = majority = NULL;
